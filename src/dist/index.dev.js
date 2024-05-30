@@ -14,6 +14,9 @@ var bodyParser = require('body-parser');
 
 var collection = require("./config");
 
+var Vendor = require("./Vendor"); // Import your Vendor model
+
+
 var app = express(); // Middleware for parsing JSON bodies
 
 app.use(express.json()); // Middleware for parsing urlencoded bodies
@@ -31,6 +34,9 @@ app.get("/signup", function (req, res) {
 });
 app.get("/admin", function (req, res) {
   res.render("admin");
+});
+app.get("/home", function (req, res) {
+  res.render("home");
 });
 app.get("/verification", function (req, res) {
   res.render("verification");
@@ -165,8 +171,8 @@ var vendorSchema = new mongoose.Schema({
   tin: String,
   businessPicture: String // Add a field for business picture
 
-});
-var Vendor = mongoose.model('Vendor', vendorSchema); // Set up multer for file uploads
+}); // const Vendor = mongoose.model('Vendor', vendorSchema);
+// Set up multer for file uploads
 
 var upload = multer({
   dest: 'uploads/'
@@ -216,6 +222,135 @@ app.post('/verification', upload.single('businessPicture'), function _callee3(re
       }
     }
   }, null, null, [[0, 9]]);
+}); // Route for fetching submitted vendors
+
+app.get('/submitted-vendors', function _callee4(req, res) {
+  var submittedVendors;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          _context4.prev = 0;
+          _context4.next = 3;
+          return regeneratorRuntime.awrap(Vendor.find({
+            submitted: true
+          }));
+
+        case 3:
+          submittedVendors = _context4.sent;
+          res.json(submittedVendors);
+          _context4.next = 11;
+          break;
+
+        case 7:
+          _context4.prev = 7;
+          _context4.t0 = _context4["catch"](0);
+          console.error('Error fetching submitted vendors:', _context4.t0);
+          res.status(500).send('An error occurred while fetching submitted vendors.');
+
+        case 11:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+}); // Route for approving a vendor
+
+app.put('/approve-vendor/:id', function _callee5(req, res) {
+  var vendorId;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          vendorId = req.params.id; // Update the vendor's approval status in the database
+
+          _context5.next = 4;
+          return regeneratorRuntime.awrap(Vendor.findByIdAndUpdate(vendorId, {
+            approved: true
+          }));
+
+        case 4:
+          res.status(200).send('Vendor approved successfully.');
+          _context5.next = 11;
+          break;
+
+        case 7:
+          _context5.prev = 7;
+          _context5.t0 = _context5["catch"](0);
+          console.error('Error approving vendor:', _context5.t0);
+          res.status(500).send('An error occurred while approving vendor.');
+
+        case 11:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+}); // Route for rejecting a vendor
+
+app.put('/reject-vendor/:id', function _callee6(req, res) {
+  var vendorId;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.prev = 0;
+          vendorId = req.params.id; // Update the vendor's approval status in the database
+
+          _context6.next = 4;
+          return regeneratorRuntime.awrap(Vendor.findByIdAndUpdate(vendorId, {
+            approved: false
+          }));
+
+        case 4:
+          res.status(200).send('Vendor rejected successfully.');
+          _context6.next = 11;
+          break;
+
+        case 7:
+          _context6.prev = 7;
+          _context6.t0 = _context6["catch"](0);
+          console.error('Error rejecting vendor:', _context6.t0);
+          res.status(500).send('An error occurred while rejecting vendor.');
+
+        case 11:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+});
+app.use(express.json());
+app.get('/api/vendors', function _callee7(req, res) {
+  var vendors;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          _context7.prev = 0;
+          _context7.next = 3;
+          return regeneratorRuntime.awrap(Vendor.find());
+
+        case 3:
+          vendors = _context7.sent;
+          res.json(vendors);
+          _context7.next = 10;
+          break;
+
+        case 7:
+          _context7.prev = 7;
+          _context7.t0 = _context7["catch"](0);
+          res.status(500).json({
+            message: 'Error fetching vendors'
+          });
+
+        case 10:
+        case "end":
+          return _context7.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
 });
 var port = 8888;
 app.listen(port, function () {

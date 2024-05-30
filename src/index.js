@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const collection = require("./config");
-
+const Vendor = require("./Vendor"); // Import your Vendor model
 const app = express();
 
 // Middleware for parsing JSON bodies
@@ -28,6 +28,10 @@ app.get("/signup", (req, res) => {
 });
 app.get("/admin", (req, res) => {
     res.render("admin");
+});
+
+app.get("/home", (req, res) => {
+  res.render("home");
 });
 
 
@@ -94,7 +98,7 @@ const vendorSchema = new mongoose.Schema({
     businessPicture: String // Add a field for business picture
 });
 
-const Vendor = mongoose.model('Vendor', vendorSchema);
+// const Vendor = mongoose.model('Vendor', vendorSchema);
 
 // Set up multer for file uploads
 const upload = multer({ dest: 'uploads/' });
@@ -132,8 +136,54 @@ app.post('/verification', upload.single('businessPicture'), async (req, res) => 
     }
 });
 
+// Route for fetching submitted vendors
+app.get('/submitted-vendors', async (req, res) => {
+    try {
+        const submittedVendors = await Vendor.find({ submitted: true });
+        res.json(submittedVendors);
+    } catch (error) {
+        console.error('Error fetching submitted vendors:', error);
+        res.status(500).send('An error occurred while fetching submitted vendors.');
+    }
+});
+
+// Route for approving a vendor
+app.put('/approve-vendor/:id', async (req, res) => {
+    try {
+        const vendorId = req.params.id;
+        // Update the vendor's approval status in the database
+        await Vendor.findByIdAndUpdate(vendorId, { approved: true });
+        res.status(200).send('Vendor approved successfully.');
+    } catch (error) {
+        console.error('Error approving vendor:', error);
+        res.status(500).send('An error occurred while approving vendor.');
+    }
+});
+
+// Route for rejecting a vendor
+app.put('/reject-vendor/:id', async (req, res) => {
+    try {
+        const vendorId = req.params.id;
+        // Update the vendor's approval status in the database
+        await Vendor.findByIdAndUpdate(vendorId, { approved: false });
+        res.status(200).send('Vendor rejected successfully.');
+    } catch (error) {
+        console.error('Error rejecting vendor:', error);
+        res.status(500).send('An error occurred while rejecting vendor.');
+    }
+});
 
 
+app.use(express.json());
+
+app.get('/api/vendors', async (req, res) => {
+    try {
+        const vendors = await Vendor.find();
+        res.json(vendors);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching vendors' });
+    }
+});
 
 const port = 8888;
 app.listen(port, () => {

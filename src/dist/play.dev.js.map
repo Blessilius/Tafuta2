@@ -1,0 +1,1 @@
+{"version":3,"sources":["play.js"],"names":["person","name","age","console","log"],"mappings":";;AAAA,IAAMA,MAAM,GAAG;AACfC,EAAAA,IAAI,EAAE,KADS;AAEfC,EAAAA,GAAG,EAAE;AAFU,CAAf;AAIAC,OAAO,CAACC,GAAR,CAAYJ,MAAZ","sourcesContent":["const person = {\r\nname: 'Max',\r\nage: 29\r\n}\r\nconsole.log(person);\r\n"],"file":"play.dev.js"}

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    
     <style>
         /* Resetting default margin and padding */
         * {
@@ -14,15 +13,14 @@
         }
 
         body {
-    margin: 0;
-    padding: 0;
-    align-items: center;
-    min-height: 100vh;
-    font-family: 'Jost', sans-serif;
-     background: linear-gradient(to bottom, pink, purple, violet);
-    color: #fff;
-}
-
+            margin: 0;
+            padding: 0;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Jost', sans-serif;
+            background: linear-gradient(to bottom, pink, purple, violet);
+            color: #fff;
+        }
 
         /* Styling for the menu */
         .menu {
@@ -50,73 +48,99 @@
             text-align: center;
             margin-top: 50px;
         }
-        input[type="search"]{
+
+        input[type="search"] {
             width: 70%;
-    padding: 10px;
-    margin-top: 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-   
-}
-    
-    
-/* Style for the search input container */
-  
+            padding: 10px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
 
-  /* Style for the search input */
-button.search-btn{
-   width: 10%;
-    padding: 10px;
-    background-color:  #333;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 1.1em;
-    cursor: pointer;
-}
-button.search-btn:hover{
-background-color: purple;
+        button.search-btn {
+            width: 10%;
+            padding: 10px;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
 
-}
-  
-.search-container{
- 
-     text-align: center;
-    margin-top: 50px; /* Adjust as needed */
-}
- 
+        button.search-btn:hover {
+            background-color: purple;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .vendors {
+            margin: 50px auto;
+            width: 80%;
+        }
+
+        .vendor {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .vendor h2 {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    
-        <!-- Content -->
     <div class="content">
         <h1>Tafuta</h1>
     </div>
 
-    
     <!-- Menu -->
     <div class="menu">
-        <a href="#">Home</a>
+        <a href="/home">Home</a>
         <a href="#">About</a>
         <a href="#">Services</a>
-        <a href="#">Contact</a>
+        <a href="/views/contact">Contact</a>
         <a href="/verification">Verification</a>
     </div>
-<div class="search-container">
-  <input type="search" class="search-input" placeholder="Search...">
- 
-</div>
-<div class="search-container">
 
-<button type="search-btn" class="search-btn">Search</button>
-</div>
-<div class="image">
+    <div class="search-container">
+        <input type="search" class="search-input" placeholder="Search...">
+        <button type="button" class="search-btn">Search</button>
+    </div>
 
+    <div class="vendors"></div>
 
+    <script>
+        async function fetchVendors() {
+            try {
+                const response = await fetch('/api/vendors');
+                const vendors = await response.json();
+                const vendorsContainer = document.querySelector('.vendors');
 
-</div>
+                vendorsContainer.innerHTML = vendors.map(vendor => `
+                    <div class="vendor">
+                        <h2>${vendor.businessName}</h2>
+                        <p>${vendor.description}</p>
+                        <p><strong>Location:</strong> ${vendor.location}</p>
+                        <p><strong>Social Media:</strong> 
+                            <a href="${vendor.socialMediaLink1}" target="_blank">Instagram</a> | 
+                            <a href="${vendor.socialMediaLink2}" target="_blank">Twitter</a>
+                        </p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching vendors:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchVendors);
+    </script>
 </body>
 </html>
